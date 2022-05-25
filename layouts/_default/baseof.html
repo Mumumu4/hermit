@@ -32,12 +32,13 @@
 	{{ block "footer" . -}}{{ end }}
 
 	{{ $main := resources.Get "js/main.js" -}}
+	{{ $quicklinkjs := resources.GetRemote "https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" -}}
 	{{ if .Site.Params.code_copy_button | default true -}}
 		{{ $codeCopy := resources.Get "js/code-copy.js" -}}
-		{{ $script := slice $main $codeCopy | resources.Concat "js/bundle.js" | minify | fingerprint -}}
+		{{ $script := slice $main $codeCopy $quicklinkjs | resources.Concat "js/bundle.js" | minify | fingerprint -}}
 		<script src="{{ $script.Permalink }}" {{ printf "integrity=%q" $script.Data.Integrity | safeHTMLAttr }} crossorigin="anonymous"></script>
 	{{ else -}}
-		{{ $script := $main | minify | fingerprint -}}
+		{{ $script := slice $main $quicklinkjs | resources.Concat "js/bundle.js" | minify | fingerprint -}}
 		<script src="{{ $script.Permalink }}" {{ printf "integrity=%q" $script.Data.Integrity | safeHTMLAttr }} crossorigin="anonymous"></script>
 	{{ end }}
 
@@ -45,6 +46,16 @@
 	{{- if templates.Exists "partials/extra-foot.html" -}}
 	{{ partial "extra-foot.html" . }}
 	{{- end }}
+	<script>
+		window.addEventListener('load', () => {
+			quicklink.listen({
+				ignores: [
+					uri => uri.includes('index.xml'),
+					uri => uri.includes('#')
+				]
+			})
+	});
+	</script>
 </body>
 
 </html>
