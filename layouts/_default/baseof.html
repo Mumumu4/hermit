@@ -32,7 +32,7 @@
 	{{ block "footer" . -}}{{ end }}
 
 	{{ $main := resources.Get "js/main.js" -}}
-	{{ $quicklinkjs := resources.GetRemote "https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" -}}
+	{{ $quicklinkjs := resources.Get "js/quicklink.umd.js" -}}
 	{{ if .Site.Params.code_copy_button | default true -}}
 		{{ $codeCopy := resources.Get "js/code-copy.js" -}}
 		{{ $script := slice $main $codeCopy $quicklinkjs | resources.Concat "js/bundle.js" | minify | fingerprint -}}
